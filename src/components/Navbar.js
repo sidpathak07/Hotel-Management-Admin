@@ -1,6 +1,7 @@
+import axios from "axios";
 import React, { useContext, useState } from "react";
 import { HiMenu, HiX } from "react-icons/hi";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { HotelManagementContext } from "../context/HotelContext";
 
 export const Navbar = () => {
@@ -8,6 +9,20 @@ export const Navbar = () => {
   const [isMenuClicked, setIsMenuClickeded] = useState(() => {
     return false;
   });
+  const navigate = useNavigate();
+  const signOut = (e) => {
+    localStorage.removeItem("user");
+    setUser({
+      name: "",
+      email: "",
+      isVerifiedEmail: Boolean,
+      role: "",
+      phoneno: "",
+      bookings: null,
+      token: "",
+    });
+    navigate("/Signin");
+  };
   return (
     <nav
       className={
@@ -16,7 +31,9 @@ export const Navbar = () => {
           : "flex justify-around items-center h-[12vh] bg-indigo-900 text-white  border-b border-white"
       }
     >
-      <p className="font-bold text-xl">Easy@Booking</p>
+      <p className="font-bold text-xl">
+        <NavLink to="/"> Easy@Booking </NavLink>
+      </p>
       <p
         className={isMenuClicked ? "hidden" : "visible sm:hidden"}
         onClick={() => setIsMenuClickeded((prev) => !prev)}
@@ -35,21 +52,21 @@ export const Navbar = () => {
           <HiX onClick={() => setIsMenuClickeded((prev) => !prev)} />
         </li>
         <li className="py-1">
-          <NavLink>Hotels</NavLink>
+          <NavLink to="/hotellist">Hotels</NavLink>
         </li>
         <li className="py-1">
-          <NavLink>Admin Settings</NavLink>
+          <NavLink to="/adminsettings">Admin Settings</NavLink>
         </li>
         <li className="py-1">
-          <NavLink>Profile</NavLink>
+          <NavLink to="/profile">Profile</NavLink>
         </li>
         {user.email ? (
-          <li className="btn-yellow">
-            <NavLink>Sign Out</NavLink>
+          <li className="btn-yellow" onClick={signOut}>
+            Sign Out
           </li>
         ) : (
           <li className="btn-yellow">
-            <NavLink>Sign In</NavLink>
+            <NavLink to="/signin">Sign In</NavLink>
           </li>
         )}
       </ul>

@@ -8,6 +8,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
 }
 
 code {
@@ -18,5 +19,11 @@ code {
 @layer components {
   .btn-yellow {
     @apply bg-shocking-yellow hover:bg-chrome-yellow text-electric-blue font-bold py-1 px-4 rounded;
+  }
+  .btn-red{
+    @apply bg-hot-pink hover:bg-pink-700 text-white font-normal py-1 px-4 rounded
+  }
+  .btn-green{
+    @apply bg-green-500 hover:bg-green-700 text-white font-normal py-1 px-4 rounded
   }
 }

@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
 import { Base } from "../components/Base";
 import { Searchbox } from "../components/Searchbox";
+import { isAuthenticated } from "../auth/auth";
 import { HotelManagementContext } from "../context/HotelContext";
-import { toast } from "react-toastify";
+
 export const Home = () => {
   const { searchData } = useContext(HotelManagementContext);
   return (
@@ -16,9 +17,11 @@ export const Home = () => {
       <Searchbox />
       <button
         className="btn-yellow"
-        onClick={() => toast.success("SUCCESS TOAST")}
+        onClick={() => {
+          console.log(searchData);
+        }}
       >
-        Check Search
+        Check
       </button>
     </Base>
   );

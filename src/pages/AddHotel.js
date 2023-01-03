@@ -5,34 +5,27 @@ import { HiMenu } from "react-icons/hi";
 import { HotelManagementContext } from "../context/HotelContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Spinner } from "../components/Spinner";
-
-export const AdminSettings = () => {
+export const AddHotel = () => {
   const { showAdminSettingsMenu, setShowAdminSettingsMenu, user } = useContext(
     HotelManagementContext
   );
 
-  const [isLoading, setIsLoding] = useState(() => true);
   const [email, setEmail] = useState(() => "");
   const [name, setName] = useState(() => "");
-  const [phoneno, setPhoneno] = useState(() => "");
   const createAdmin = (e) => {
     e.preventDefault();
-    setIsLoding((prev) => !prev);
     axios({
       method: "post",
-      url: "http://localhost:4000/api/v1/admin/createAdmin",
+      url: "http://localhost:4000/api/v1/login",
       data: {
         email: email,
         name: name,
-        phoneno: phoneno,
       },
       headers: {
         Authorization: `Bearer ${user.token}`,
       },
     })
       .then((res) => {
-        setIsLoding((prev) => !prev);
         if (res.data.success) toast.success("Admin User Created");
         else {
           toast.error("Failed to create admin..Please use valid emailId");
@@ -45,7 +38,7 @@ export const AdminSettings = () => {
 
   return (
     <Base>
-      <div className="grid grid-cols-3 min-h-screen text-electric-blue">
+      <div className="grid grid-cols-3 min-h-[88vh] sm:min-h-[88vh] text-electric-blue">
         <div
           className={
             showAdminSettingsMenu
@@ -101,7 +94,7 @@ export const AdminSettings = () => {
             <HiMenu size={30} />
           </div>
           <div className="col-start-2 col-end-12 text-center font-bold text-2xl">
-            <h1 className="font-2xl my-3">Add Admin</h1>
+            <h1 className="font-2xl my-3">Add Hotel</h1>
             <div className="shadow-gray-400 shadow-2xl rounded-2xl bg-white flex flex-col justify-evenly h-[50%]  w-[75%] mx-auto mt-3  ">
               <div>
                 <input
@@ -121,22 +114,9 @@ export const AdminSettings = () => {
                   className="px-2 shadow-inner border-2 border-gray-200 rounded-xl h-12 outline-none"
                 />
               </div>
-              <div>
-                <input
-                  type="text"
-                  placeholder="Enter Phone No"
-                  value={phoneno}
-                  onChange={(e) => setPhoneno(e.target.value)}
-                  className="px-2 shadow-inner border-2 border-gray-200 rounded-xl h-12 outline-none"
-                />
-              </div>
-              <button
-                onClick={createAdmin}
-                className="btn-yellow w-[30%] mx-auto text-center"
-              >
+              <button className="btn-yellow w-[30%] mx-auto">
                 Create Admin
               </button>
-              {isLoading && <Spinner />}
             </div>
           </div>
         </div>

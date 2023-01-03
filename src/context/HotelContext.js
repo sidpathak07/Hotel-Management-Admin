@@ -9,7 +9,9 @@ export const HotelManagementProvider = ({ children }) => {
       email: "",
       isVerifiedEmail: Boolean,
       role: "",
+      phoneno: "",
       bookings: null,
+      token: "",
     };
   });
   const [searchData, setSearchData] = useState(() => {
@@ -26,6 +28,9 @@ export const HotelManagementProvider = ({ children }) => {
   const [bookingData, setBookingData] = useState(() => {
     return {};
   });
+  const [showAdminSettingsMenu, setShowAdminSettingsMenu] = useState(
+    () => true
+  );
   return (
     <HotelManagementContext.Provider
       value={{
@@ -35,6 +40,8 @@ export const HotelManagementProvider = ({ children }) => {
         setSearchData,
         bookingData,
         setBookingData,
+        showAdminSettingsMenu,
+        setShowAdminSettingsMenu,
       }}
     >
       {children}
