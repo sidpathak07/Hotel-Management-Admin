@@ -11,9 +11,11 @@ import { HotelList } from "./pages/HotelList";
 import { Signin } from "./pages/Signin";
 import { HotelManagementContext } from "./context/HotelContext";
 import { isAuthenticated } from "./auth/auth";
-import { AdminSettings } from "./pages/AdminSettings";
 import { ChangeUserStatus } from "./pages/ChangeUserStatus";
-import { ChangeUserStatusOne } from "./pages/ChangeUserStatusOne";
+import { AdminSettings } from "./pages/AdminSettings";
+import { AddHotel } from "./pages/AddHotel";
+import { CheckMaps } from "./pages/CheckMaps";
+import { ManageHotel } from "./pages/ManageHotel";
 
 export const Routees = () => {
   const { user, setUser } = useContext(HotelManagementContext);
@@ -37,11 +39,14 @@ export const Routees = () => {
               isAuthenticated().email ? (
                 <AdminSettings />
               ) : (
-                <Navigate to={{ pathname: "/signup" }} />
+                <Navigate to={{ pathname: "/Signin" }} />
               )
             }
           />
-          <Route path="changeuserstatus" element={<ChangeUserStatusOne />} />
+          <Route path="changeuserstatus" element={<ChangeUserStatus />} />
+          {/* <Route path="addhotel" element={<CheckMaps />} /> */}
+          <Route path="addhotel" element={<AddHotel />} />
+          <Route path="managehotel" element={<ManageHotel />} />
         </Route>
       </Routes>
     </Router>

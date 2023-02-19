@@ -13,45 +13,85 @@ export const AdminNavbar = () => {
       {isHamOn && (
         <ul className="grid grid-auto-fit-xs gap-8 text-center sm:hidden mb-3">
           <li>
-            <NavLink to="/adminsettings">Create Admin</NavLink>
+            <NavLink className="hover:underline" to="/adminsettings">
+              Create Admin
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/adminsettings/changeuserstatus">Manage Admin</NavLink>
+            <NavLink
+              className="hover:underline"
+              to="/adminsettings/changeuserstatus"
+            >
+              Manage Admin
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/adminsettings/addhotel">Add Hotel</NavLink>
+            <NavLink className="hover:underline" to="/adminsettings/addhotel">
+              Add Hotel
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/adminsettings/updatehotel">Update Hotel</NavLink>
+            <NavLink
+              className="hover:underline"
+              to="/adminsettings/updatehotel"
+            >
+              Update Hotel
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/adminsettings/getbookingstats">
+            <NavLink
+              className="hover:underline"
+              to="/adminsettings/getbookingstats"
+            >
               Bookings Stats
             </NavLink>
           </li>
           <li>
-            <NavLink to="/adminsettings/sitesettings">Site Settings</NavLink>
+            <NavLink
+              className="hover:underline"
+              to="/adminsettings/sitesettings"
+            >
+              Site Settings
+            </NavLink>
           </li>
         </ul>
       )}
       <ul className="hidden sm:grid sm:grid-auto-fit-xs gap-8 text-center py-3">
         <li>
-          <NavLink to="/adminsettings">Create Admin</NavLink>
+          <NavLink className="hover:underline" to="/adminsettings">
+            Create Admin
+          </NavLink>
         </li>
         <li>
-          <NavLink to="/adminsettings/changeuserstatus">Manage Admin</NavLink>
+          <NavLink
+            className="hover:underline"
+            to="/adminsettings/changeuserstatus"
+          >
+            Manage Admin
+          </NavLink>
         </li>
         <li>
-          <NavLink to="/adminsettings/addhotel">Add Hotel</NavLink>
+          <NavLink className="hover:underline" to="/adminsettings/addhotel">
+            Add Hotel
+          </NavLink>
         </li>
         <li>
-          <NavLink to="/adminsettings/updatehotel">Update Hotel</NavLink>
+          <NavLink className="hover:underline" to="/adminsettings/managehotel">
+            Manage Hotel
+          </NavLink>
         </li>
         <li>
-          <NavLink to="/adminsettings/getbookingstats">Bookings Stats</NavLink>
+          <NavLink
+            className="hover:underline"
+            to="/adminsettings/getbookingstats"
+          >
+            Bookings Stats
+          </NavLink>
         </li>
         <li>
-          <NavLink to="/adminsettings/sitesettings">Site Settings</NavLink>
+          <NavLink className="hover:underline" to="/adminsettings/sitesettings">
+            Site Settings
+          </NavLink>
         </li>
       </ul>
     </div>

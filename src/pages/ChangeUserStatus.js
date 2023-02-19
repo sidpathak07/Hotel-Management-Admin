@@ -1,39 +1,23 @@
-import React, { useContext, useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
-import { Base } from "../components/Base";
-import { HiMenu } from "react-icons/hi";
-import { HotelManagementContext } from "../context/HotelContext";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { Spinner } from "../components/Spinner";
+import React, { useState, useContext, useEffect } from "react";
 import { AdminNavbar } from "../components/AdminNavbar";
+import { Base } from "../components/Base";
+import { HiSearch } from "react-icons/hi";
+import { Spinner } from "../components/Spinner";
+import axios from "axios";
+import { HotelManagementContext } from "../context/HotelContext";
+import { toast } from "react-toastify";
+import { isAuthenticated } from "../auth/auth";
 
 export const ChangeUserStatus = () => {
-  const { showAdminSettingsMenu, setShowAdminSettingsMenu, user } = useContext(
-    HotelManagementContext
-  );
-
-  const [isLoadingAdminList, setIsLoadingAdminList] = useState(() => false);
-  const [isLoadingSearch, setIsLoadingSearch] = useState(() => false);
-  const [email, setEmail] = useState(() => "");
+  const { user } = useContext(HotelManagementContext);
+  const [isLoading, setIsLoading] = useState(() => false);
   const [searchedUser, setSearchedUser] = useState(() => null);
+  const [email, setEmail] = useState(() => "");
   const [adminList, setAdminList] = useState(() => []);
+  const [isLoadingAdminList, setIsLoadingAdminList] = useState(() => false);
 
-  const getAdminList = () => {
-    axios({
-      method: "get",
-      url: "http://localhost:4000/api/v1/admin/getAllAdminList",
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
-    }).then((res) => {
-      console.log(res.data);
-      setAdminList(res.data.users);
-      setIsLoadingAdminList((prev) => !prev);
-    });
-  };
   const searchUser = (e) => {
-    setIsLoadingSearch((prev) => !prev);
+    setIsLoading((prev) => !prev);
     e.preventDefault();
     console.log(email);
     axios({
@@ -43,189 +27,170 @@ export const ChangeUserStatus = () => {
         email: email,
       },
       headers: {
-        Authorization: `Bearer ${user.token}`,
+        Authorization: `Bearer ${isAuthenticated().token}`,
       },
     })
       .then((res) => {
-        setIsLoadingSearch((prev) => !prev);
+        setIsLoading((prev) => !prev);
         if (res.data.success && res.data.user != null) {
+          console.log(res.data.user);
           setSearchedUser(res.data.user);
         } else {
           toast.error("No user found");
         }
       })
       .catch((err) => {
-        setIsLoadingSearch((prev) => !prev);
+        setIsLoading((prev) => !prev);
         toast.error("Unknown error");
       });
   };
 
-  const changeUserRole = (e, role, userId) => {
-    if (role === "admin") {
-      axios({
-        method: "post",
-        url: "http://localhost:4000/api/v1/updaterole/removeadmin",
-        data: {
-          userId: userId,
-        },
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      }).then((res) => {
-        console.log(res);
-        if (res.data.success) {
-          toast.success(`${res.data.message}`);
-          setSearchedUser(res.data.user);
-        } else {
-          toast.error(`${res.data.message}`);
-        }
-      });
-    } else {
-      axios({
-        method: "post",
-        url: "http://localhost:4000/api/v1/updaterole/addadmin",
-        data: {
-          userId: userId,
-        },
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      }).then((res) => {
-        console.log(res);
-        if (res.data.success) {
-          toast.success(`${res.data.message}`);
-          setSearchedUser(res.data.user);
-        } else {
-          toast.error(`${res.data.message}`);
-        }
-      });
-    }
-  };
-
-  const removeAdmin = (userId) => {
+  const getAdminList = () => {
     axios({
-      method: "post",
-      url: "http://localhost:4000/api/v1/updaterole/removeadmin",
-      data: {
-        userId: userId,
-      },
+      method: "get",
+      url: "http://localhost:4000/api/v1/admin/getAllAdminList",
       headers: {
-        Authorization: `Bearer ${user.token}`,
+        Authorization: `Bearer ${isAuthenticated().token}`,
       },
     }).then((res) => {
-      console.log(res);
-      if (res.data.success) {
-        toast.success(`${res.data.message}`);
-        let newAdminList = adminList.filter((admin) => admin._id !== userId);
-        setAdminList(newAdminList);
-      } else {
-        toast.error(`${res.data.message}`);
-      }
+      console.log(res.data);
+      setAdminList(res.data.users);
     });
   };
 
-  // useEffect(() => {
-  //   setIsLoadingAdminList((prev) => !prev);
-  //   getAdminList();
-  // }, []);
+  const removeAdmin = (e, userId) => {
+    axios({
+      method: "put",
+      url: "http://localhost:4000/api/v1/updaterole/removeadmin",
+      data: {
+        userId,
+      },
+      headers: {
+        Authorization: `Bearer ${isAuthenticated().token}`,
+      },
+    })
+      .then((res) => {
+        if (res.data.success) {
+          toast.success(`${res.data.message}`);
+          setSearchedUser(null);
+          getAdminList();
+        } else {
+          toast.error(`${res.data.message}`);
+        }
+      })
+      .catch((err) => {
+        toast.error("Try again later");
+      });
+  };
+
+  const addAdmin = (e, userId) => {
+    axios({
+      method: "put",
+      url: "http://localhost:4000/api/v1/updaterole/addadmin",
+      data: {
+        userId,
+      },
+      headers: {
+        Authorization: `Bearer ${isAuthenticated().token}`,
+      },
+    })
+      .then((res) => {
+        if (res.data.success) {
+          toast.success(`${res.data.message}`);
+          setSearchedUser(null);
+          setEmail("");
+          getAdminList();
+        } else {
+          toast.error(`${res.data.message}`);
+        }
+      })
+      .catch((err) => {
+        toast.error("Try again later");
+      });
+  };
+
+  useEffect(() => {
+    setIsLoadingAdminList((prev) => !prev);
+    getAdminList();
+    setIsLoadingAdminList((prev) => !prev);
+  }, []);
   return (
-    <Base>
-      <AdminNavbar />
-      <div className="text-center font-bold text-2xl">
-        <h1 className="text-2xl my-3">Manage Admin</h1>
-        <div className="flex justify-center mx-auto border-2 border-black">
-          <input
-            type="email"
-            name="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border-2 border-pink-500"
-          />
-          <button className="btn-yellow">Search</button>
-        </div>
-        {searchedUser && (
-          <div className="font-normal mx-auto mt-4 w-[75%]">
-            <p className="font-bold text-2xl">Searched User</p>
-            <table className="table-fixed text-center">
-              <thead>
-                <tr>
-                  <th scope="col" className="py-3 px-6">
-                    Name
-                  </th>
-                  <th scope="col" className="py-3 px-6">
-                    Email
-                  </th>
-                  <th scope="col" className="py-3 px-6">
-                    Role
-                  </th>
-                  <th scope="col" className="py-3 px-6">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{`${searchedUser.name}`}</td>
-                  <td>{`${searchedUser.email}`}</td>
-                  <td>{`${searchedUser.role}`}</td>
-                  <td>
-                    <button
-                      className={`${
-                        searchedUser.role === "admin" ? "btn-red" : "btn-green"
-                      }`}
-                      onClick={(e) =>
-                        changeUserRole(e, searchedUser.role, searchedUser._id)
-                      }
-                    >
-                      {searchedUser.role === "admin"
-                        ? "Remove Admin"
-                        : "Add Admin"}
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+    <div>
+      <Base>
+        <AdminNavbar />
+        <div className="text-electric-blue w-[90%] mx-auto">
+          <h1 className="text-2xl font-bold text-center mt-2">Manage Admin</h1>
+          <div className="lg:flex mt-2 justify-center text-center">
+            <input
+              className="border-2 outline-none border-pink-500 rounded-xl px-2 w-[50vw] md:w-[30vw] h-10"
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <button className="btn-yellow rounded-xl ml-2" onClick={searchUser}>
+              <HiSearch size={20} />
+            </button>
           </div>
-        )}
-        <p className="font-bold text-2xl mt-4">Present Admin</p>
-        <Spinner />
-        {!isLoadingAdminList && (
-          <table className="table-auto text-center font-normal mx-auto w-[75%]">
-            <thead>
-              <tr>
-                <th scope="col" className="py-3 px-6">
-                  Name
-                </th>
-                <th scope="col" className="py-3 px-6">
-                  Email
-                </th>
-                <th scope="col" className="py-3 px-6">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {adminList.map((admin, index) => {
-                return (
-                  <tr key={index}>
-                    <td className="py-3 px-6">{`${admin.name}`}</td>
-                    <td className="py-3 px-6">{`${admin.email}`}</td>
-                    <td className="py-3 px-6">
-                      <button
-                        className="btn-red"
-                        onClick={(e) => removeAdmin(admin._id)}
-                      >
-                        Remove Admin
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
-    </Base>
+          {isLoading && <Spinner />}
+          {!isLoading && searchedUser && (
+            <div className="px-3 my-4 w-[50%] mx-auto">
+              <h1 className="my-2 text-xl font-bold text-center">
+                Searched User
+              </h1>
+              <div className="text-center my-2 mx-2  h-[10vw] flex flex-col justify-around">
+                <p>Name: {searchedUser.name}</p>
+                <p>Email: {searchedUser.email}</p>
+                <p>Role: {searchedUser.role}</p>
+
+                {searchedUser.role === "admin" ? (
+                  <button
+                    onClick={(e) => removeAdmin(e, searchedUser._id)}
+                    className="btn-red w-[10vw] mx-auto"
+                  >
+                    Remove Admin
+                  </button>
+                ) : (
+                  <button
+                    onClick={(e) => addAdmin(e, searchedUser._id)}
+                    className="btn-green w-[10vw] mx-auto"
+                  >
+                    Add Admin
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+          <div className="text-center">
+            <h1 className="mt-4 font-bold text-xl">List of Admins</h1>
+            {isLoadingAdminList && <Spinner />}
+            <div className="grid grid-auto-fit-xs">
+              {adminList.map((admin, index) => (
+                <div
+                  key={index}
+                  className="my-2 mx-2 border-2 border-gray-300 hover:shadow-2xl h-[35vw] md:h-[25vw] lg:h-[13vw] flex flex-col justify-around"
+                >
+                  <p>Name: {admin.name}</p>
+                  <p>Email: {admin.email}</p>
+                  <button
+                    disabled={admin.email === user.email ? true : false}
+                    className={
+                      admin.email === user.email
+                        ? "cursor-not-allowed btn-red w-[20vw] md:w-[13vw] lg:w-[10vw] mx-auto"
+                        : "btn-red w-[20vw] md:w-[13vw] lg:w-[10vw] mx-auto"
+                    }
+                    onClick={(e) => removeAdmin(e, admin._id)}
+                  >
+                    Remove Admin
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Base>
+    </div>
   );
 };

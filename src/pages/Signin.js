@@ -17,7 +17,7 @@ export const Signin = () => {
     console.log(email, password);
     let isEmail = validator.isEmail(email);
     let isStrongPassword = validator.isStrongPassword(password);
-    if (isEmail && isStrongPassword) {
+    if (isEmail && isStrongPassword && email && password) {
       axios({
         method: "post",
         url: "http://localhost:4000/api/v1/login",

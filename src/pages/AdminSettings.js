@@ -1,146 +1,93 @@
-import React, { useContext, useState } from "react";
-import { NavLink } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { AdminNavbar } from "../components/AdminNavbar";
 import { Base } from "../components/Base";
-import { HiMenu } from "react-icons/hi";
-import { HotelManagementContext } from "../context/HotelContext";
+import { Spinner } from "../components/Spinner";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Spinner } from "../components/Spinner";
-
+import { HotelManagementContext } from "../context/HotelContext";
+import validator from "validator";
+import { isAuthenticated } from "../auth/auth";
 export const AdminSettings = () => {
-  const { showAdminSettingsMenu, setShowAdminSettingsMenu, user } = useContext(
-    HotelManagementContext
-  );
-
-  const [isLoading, setIsLoding] = useState(() => true);
+  const { user } = useContext(HotelManagementContext);
+  const [isLoading, setIsLoading] = useState(() => false);
   const [email, setEmail] = useState(() => "");
   const [name, setName] = useState(() => "");
   const [phoneno, setPhoneno] = useState(() => "");
   const createAdmin = (e) => {
     e.preventDefault();
-    setIsLoding((prev) => !prev);
-    axios({
-      method: "post",
-      url: "http://localhost:4000/api/v1/admin/createAdmin",
-      data: {
-        email: email,
-        name: name,
-        phoneno: phoneno,
-      },
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
-    })
-      .then((res) => {
-        setIsLoding((prev) => !prev);
-        if (res.data.success) toast.success("Admin User Created");
-        else {
-          toast.error("Failed to create admin..Please use valid emailId");
-        }
-      })
-      .catch((err) => {
-        toast.error("Failed to create admin please try again");
-      });
-  };
+    setIsLoading((prev) => !prev);
+    let isEmail = validator.isEmail(email);
+    let isPhoneno = validator.isMobilePhone(phoneno);
 
+    if (isEmail && name && isPhoneno) {
+      axios({
+        method: "post",
+        url: "http://localhost:4000/api/v1/admin/createAdmin",
+        data: {
+          email: email,
+          name: name,
+          phoneno: phoneno,
+        },
+        headers: {
+          Authorization: `Bearer ${isAuthenticated().token}`,
+        },
+      })
+        .then((res) => {
+          setIsLoading((prev) => !prev);
+          if (res.data.success) toast.success("Admin User Created");
+          else {
+            toast.error("Failed to create admin..Please use valid emailId");
+          }
+        })
+        .catch((err) => {
+          toast.error("Failed to create admin please try again");
+        });
+    } else {
+      toast.error("Enter all fields with valid data");
+    }
+  };
   return (
     <Base>
-      <div className="grid grid-cols-3 min-h-screen text-electric-blue">
-        <div
-          className={
-            showAdminSettingsMenu
-              ? "border-2 border-blue-500 col-span-1 lg:text-center"
-              : "border-2 border-blue-500 col-span-1 lg:text-center hidden"
-          }
+      <AdminNavbar />
+      <div className="my-3 flex flex-col w-[75vw] md:w-[30vw] h-[80vw] md:h-[30vw] justify-around mx-auto shadow-2xl">
+        <h1 className="text-center text-2xl text-electric-blue font-bold">
+          Create Admin
+        </h1>
+        <input
+          className="px-2 border-b-2 border-gray-200 w-[90%] md:w-[75%] h-10 mx-auto outline-none shadow-inner rounded-xl"
+          type="name"
+          name="name"
+          id="name"
+          placeholder="Enter Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
+          className="px-2 border-b-2  border-gray-200 w-[90%] md:w-[75%] h-10 mx-auto outline-none shadow-inner rounded-xl"
+          type="email"
+          name="email"
+          id="email"
+          placeholder="Enter Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          className="px-2 border-b-2 border-gray-200 w-[90%] md:w-[75%] h-10 mx-auto outline-none shadow-inner rounded-xl"
+          type="text"
+          name="phoneno"
+          id="phoneno"
+          placeholder="Enter Phone"
+          value={phoneno}
+          onChange={(e) => setPhoneno(e.target.value)}
+        />
+        <button
+          onClick={createAdmin}
+          className="btn-yellow lg:w-[10vw] mx-auto"
         >
-          <div className="ml-2 lg:ml-0">
-            <div
-              className="my-2 lg:hidden"
-              onClick={() => setShowAdminSettingsMenu((prev) => !prev)}
-            >
-              <HiMenu size={30} />
-            </div>
-            <div className="my-2">
-              <NavLink to="/adminsettings">Create Admin</NavLink>
-            </div>
-            <div className="mb-2">
-              <NavLink to="/adminsettings/changeuserstatus">
-                Add/Remove Admin
-              </NavLink>
-            </div>
-            <div className="mb-2">
-              <NavLink to="/adminsettings/addhotel">Add Hotel</NavLink>
-            </div>
-            <div className="mb-2">
-              <NavLink to="/adminsettings/updatehotel">Update Hotel</NavLink>
-            </div>
-            <div className="mb-2">
-              <NavLink to="/adminsettings/getbookingstats">Bookings</NavLink>
-            </div>
-            <div className="mb-2">
-              <NavLink to="/">Available Rooms</NavLink>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className={
-            showAdminSettingsMenu
-              ? "border-2  col-span-2 grid grid-cols-12"
-              : "border-2  col-span-3 grid grid-cols-12"
-          }
-        >
-          <div
-            className={
-              showAdminSettingsMenu
-                ? "hidden"
-                : "col-span-1 justify-self-center"
-            }
-            onClick={() => setShowAdminSettingsMenu((prev) => !prev)}
-          >
-            <HiMenu size={30} />
-          </div>
-          <div className="col-start-2 col-end-12 text-center font-bold text-2xl">
-            <h1 className="font-2xl my-3">Add Admin</h1>
-            <div className="shadow-gray-400 shadow-2xl rounded-2xl bg-white flex flex-col justify-evenly h-[50%]  w-[75%] mx-auto mt-3  ">
-              <div>
-                <input
-                  type="text"
-                  placeholder="Enter Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="px-2 shadow-inner border-2 border-gray-200 rounded-xl h-12 outline-none"
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  placeholder="Enter Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="px-2 shadow-inner border-2 border-gray-200 rounded-xl h-12 outline-none"
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  placeholder="Enter Phone No"
-                  value={phoneno}
-                  onChange={(e) => setPhoneno(e.target.value)}
-                  className="px-2 shadow-inner border-2 border-gray-200 rounded-xl h-12 outline-none"
-                />
-              </div>
-              <button
-                onClick={createAdmin}
-                className="btn-yellow w-[30%] mx-auto text-center"
-              >
-                Create Admin
-              </button>
-              {isLoading && <Spinner />}
-            </div>
-          </div>
-        </div>
+          Create Admin
+        </button>
       </div>
+      {isLoading && <Spinner />}
     </Base>
   );
 };

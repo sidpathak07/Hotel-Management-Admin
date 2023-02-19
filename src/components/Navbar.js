@@ -54,12 +54,22 @@ export const Navbar = () => {
         <li className="py-1">
           <NavLink to="/hotellist">Hotels</NavLink>
         </li>
-        <li className="py-1">
-          <NavLink to="/adminsettings">Admin Settings</NavLink>
-        </li>
-        <li className="py-1">
-          <NavLink to="/profile">Profile</NavLink>
-        </li>
+        {user.email ? (
+          <li className="py-1">
+            <NavLink to="/adminsettings">Admin Settings</NavLink>
+          </li>
+        ) : (
+          ""
+        )}
+
+        {user.email ? (
+          <li className="py-1">
+            <NavLink to="/profile">Profile</NavLink>
+          </li>
+        ) : (
+          ""
+        )}
+
         {user.email ? (
           <li className="btn-yellow" onClick={signOut}>
             Sign Out
