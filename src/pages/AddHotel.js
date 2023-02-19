@@ -68,7 +68,7 @@ export const AddHotel = () => {
     axios(
       `https://maps.googleapis.com/maps/api/geocode/json?address=${
         hotelName + " " + address
-      }&key=AIzaSyBSO9Gcpkh_BW51kJ7OMpd4G_XugjW6_6k`
+      }&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`
     )
       .then((response) => {
         // console.log(response);
